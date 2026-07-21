@@ -1,5 +1,7 @@
 # Голос по фактам
 
+[Открыть публичный сайт](https://cozycactus.github.io/golos-po-faktam/)
+
 Русскоязычный civic-tech прототип, который показывает заявления политиков рядом
 с официальными текстами законов и поимёнными голосованиями Кнессета.
 
@@ -31,4 +33,9 @@ npm run dev
 npm run build
 npm run lint
 node --test tests/rendered-html.test.mjs
+npm run test:pages
 ```
+
+`npm run build` собирает серверную версию для Sites. `npm run build:pages`
+создаёт полностью статическую версию в `dist-pages/` для GitHub Pages. При
+публикации ветки `main` GitHub Actions автоматически проверяет и обновляет сайт.

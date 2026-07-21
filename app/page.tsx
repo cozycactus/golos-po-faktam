@@ -96,6 +96,18 @@ const fallbackResults: VoteResult[] = [
   { firstName: "אושר", lastName: "שקלים", result: "for" },
 ];
 
+export type VoteData = {
+  live: boolean;
+  lastUpdated: string;
+  results: VoteResult[];
+};
+
+export const snapshotVoteData: VoteData = {
+  live: false,
+  lastUpdated: "2025-03-31T11:13:26.78+03:00",
+  results: fallbackResults,
+};
+
 function normalizeResult(result: string): VoteResult["result"] {
   if (result === "בעד") return "for";
   if (result === "נגד") return "against";
@@ -146,11 +158,7 @@ async function getVoteData() {
     };
   } catch (error) {
     console.error("[knesset-api] using verified fallback snapshot", error);
-    return {
-      live: false,
-      lastUpdated: "2025-03-31T11:13:26.78+03:00",
-      results: fallbackResults,
-    };
+    return snapshotVoteData;
   }
 }
 
@@ -162,8 +170,15 @@ function formatSourceDate(value: string) {
   }).format(new Date(value));
 }
 
-export default async function Home() {
-  const voteData = await getVoteData();
+export function Dossier({ voteData }: { voteData: VoteData }) {
+  const resultCounts = voteData.results.reduce(
+    (counts, row) => {
+      counts[row.result] += 1;
+      return counts;
+    },
+    { for: 0, against: 0, present: 0, other: 0 },
+  );
+  const withoutRegisteredResult = Math.max(0, 120 - voteData.results.length);
 
   return (
     <main>
@@ -198,22 +213,27 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="vote-score" aria-label="67 за, 1 против, 2 присутствовали без голоса">
+        <div
+          className="vote-score"
+          aria-label={`${resultCounts.for} за, ${resultCounts.against} против, ${resultCounts.present} присутствовали без голоса`}
+        >
           <div className="score-primary">
-            <span className="score-number">67</span>
+            <span className="score-number">{resultCounts.for}</span>
             <span className="score-label">за принятие</span>
           </div>
           <div className="score-secondary">
             <div>
-              <strong>1</strong>
+              <strong>{resultCounts.against}</strong>
               <span>против</span>
             </div>
             <div>
-              <strong>2</strong>
+              <strong>{resultCounts.present}</strong>
               <span>присутствовали</span>
             </div>
           </div>
-          <p className="score-note">50 депутатов не имеют строки в этой поимённой записи</p>
+          <p className="score-note">
+            {withoutRegisteredResult} депутатов не имеют строки в этой поимённой записи
+          </p>
         </div>
       </section>
 
@@ -360,4 +380,8 @@ export default async function Home() {
       </footer>
     </main>
   );
+}
+
+export default async function Home() {
+  return <Dossier voteData={await getVoteData()} />;
 }
