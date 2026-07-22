@@ -7,15 +7,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const baseUrl = new URL(`${protocol}://${host}`);
-  const title = "Голос по фактам — как голосовали депутаты Кнессета";
+  const title = "Голос по фактам — архив голосований Кнессета";
   const description =
-    "Проверяем заявления политиков по текстам законов и официальным голосованиям Кнессета.";
+    "Окончательные голосования, тексты законов и границы выводов — без рекомендации, за кого голосовать.";
   const imageUrl = new URL("/og.png", baseUrl).toString();
 
   return {
     metadataBase: baseUrl,
     title,
     description,
+    alternates: { canonical: "/" },
     openGraph: {
       title,
       description,
@@ -24,9 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: imageUrl,
-          width: 1734,
-          height: 907,
-          alt: "Голос по фактам — досье голосования № 43884",
+          width: 1732,
+          height: 908,
+          alt: "Голос по фактам — архив голосований Кнессета",
         },
       ],
     },

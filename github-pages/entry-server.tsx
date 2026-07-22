@@ -1,6 +1,15 @@
 import { renderToString } from "react-dom/server";
-import { Dossier, snapshotVoteData } from "../app/page";
+import {
+  githubPagesBasePath,
+  StaticRoute,
+  staticRoutes,
+  type StaticRouteKey,
+} from "./routes";
 
-export function render() {
-  return renderToString(<Dossier voteData={snapshotVoteData} />);
+export { staticRoutes };
+
+export function render(routeKey: StaticRouteKey) {
+  return renderToString(
+    <StaticRoute routeKey={routeKey} basePath={githubPagesBasePath} />,
+  );
 }

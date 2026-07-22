@@ -2,11 +2,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "incremental": false,
-    "plugins": []
+    "plugins": [],
+    "types": ["node", "vite/client"]
   },
   "include": [
-    "app/page.tsx",
+    "app/VoteCatalog.tsx",
+    "app/VoteDossier.tsx",
     "app/VoteExplorer.tsx",
+    "data/votes/**/*.ts",
     "github-pages/**/*.tsx",
     "vite.pages.config.ts"
   ],

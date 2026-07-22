@@ -1,19 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { VoteResult } from "../data/votes/types";
 
-export type VoteResult = {
-  firstName: string;
-  lastName: string;
-  result: "for" | "against" | "present" | "other";
-};
+export type { VoteResult } from "../data/votes/types";
 
 type Filter = "all" | VoteResult["result"];
 
 type VoteExplorerProps = {
-  results: VoteResult[];
+  results: readonly VoteResult[];
   isLive: boolean;
   sourceUpdated: string;
+  rawResultsHref: string;
 };
 
 const aliasLists: Record<string, readonly string[]> = {
@@ -124,7 +122,12 @@ function fullName(result: VoteResult) {
   return `${result.firstName} ${result.lastName}`.trim();
 }
 
-export function VoteExplorer({ results, isLive, sourceUpdated }: VoteExplorerProps) {
+export function VoteExplorer({
+  results,
+  isLive,
+  sourceUpdated,
+  rawResultsHref,
+}: VoteExplorerProps) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [visibleCount, setVisibleCount] = useState(16);
@@ -141,8 +144,7 @@ export function VoteExplorer({ results, isLive, sourceUpdated }: VoteExplorerPro
         return normalize(`${hebrewName} ${alias?.display ?? ""} ${alias?.search ?? ""}`).includes(
           normalizedQuery,
         );
-      })
-      .sort((a, b) => a.lastName.localeCompare(b.lastName, "he"));
+      });
   }, [filter, query, results]);
 
   const shown = filtered.slice(0, visibleCount);
@@ -257,7 +259,7 @@ export function VoteExplorer({ results, isLive, sourceUpdated }: VoteExplorerPro
 
       <a
         className="raw-data-link"
-        href="https://knesset.gov.il/OdataV4/ParliamentInfo/KNS_PlenumVoteResult?%24filter=VoteID%20eq%2043884&%24top=200"
+        href={rawResultsHref}
         target="_blank"
         rel="noreferrer"
       >
